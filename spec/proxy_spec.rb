@@ -12,6 +12,9 @@ describe 'openstack-object-storage::proxy-server' do
       @chef_run.converge 'openstack-object-storage::proxy-server'
     end
 
+    include_context 'swift-stubs'
+    include_examples 'keystone-authmode'
+
     it 'installs memcache python packages' do
       expect(@chef_run).to install_package 'python-memcache'
     end
