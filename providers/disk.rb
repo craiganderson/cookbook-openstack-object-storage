@@ -243,7 +243,7 @@ action :ensure_exists do
 
       case params[:type]
       when 'xfs'
-        unless Mixlib::ShellOut.new("xfs_admin -l #{device}").run_command.status
+        unless Mixlib::ShellOut.new("blkid -t TYPE=xfs #{device}").run_command.exitstatus == 0
           Mixlib::ShellOut.new("mkfs.xfs -f -i size=512 #{device}").run_command
           update = true
         end
