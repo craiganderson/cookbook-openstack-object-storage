@@ -88,7 +88,7 @@ def parted_parse_results(input)
     throw :parse_error if line =~ /^Error:/
 
     line = input.shift
-    throw :parse_error unless line =~ %r{/dev/([^/]+):([0-9]+)B:(.*):.*$}
+    throw :parse_error unless line =~ %r{/dev/([^/]+):([0-9]+)B:([^:]+):([^:]+):([^:]+):([^:]+):.*$}
 
     blocks = Regexp.last_match(2).to_i / 1024
 
@@ -97,6 +97,10 @@ def parted_parse_results(input)
     end
 
     @current.blocks(blocks)
+
+    part_table = Regexp.last_match(6).to_s
+
+    @current.part_table(part_table)
 
     input.each do |input_line|
       # 1:1048576B:8589934591B:8588886016B:ext3::;
@@ -146,6 +150,13 @@ action :ensure_exists do
   update = false
 
   recreate = false
+
+  # Recreate if partition table is not GPT
+  part_table = @current.part_table
+  if part_table != 'gpt'
+    recreate = true
+    update = true
+  end
 
   disk_blocks = @current.blocks # 1k blocks
 
@@ -244,6 +255,8 @@ action :ensure_exists do
       case params[:type]
       when 'xfs'
 	unless Mixlib::ShellOut.new("blkid -t TYPE=xfs #{device}").run_command.exitstatus == 0
+          # Workaround for disks that have been previously formatted with ZFS: First format with ext4, then format with XFS.  For some reason running mkfs.xfs on a zfs_member does not change the output of the 'blkid' command when it is run on the block device.
+          Mixlib::ShellOut.new("mkfs.ext4 #{device}").run_command
           Mixlib::ShellOut.new("mkfs.xfs -f -i size=512 #{device}").run_command
           update = true
         end
