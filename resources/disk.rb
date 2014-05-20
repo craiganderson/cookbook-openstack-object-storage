@@ -41,3 +41,4 @@ attribute :blocks, kind_of: Integer
 attribute :device, kind_of: String
 attribute :part,   kind_of: Array
 attribute :status, kind_of: Symbol
+attribute :part_table, kind_of: String
