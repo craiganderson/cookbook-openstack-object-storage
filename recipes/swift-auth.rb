@@ -28,8 +28,8 @@ service_pass = get_password 'service', 'openstack-image'
 
 execute "prep stats accountswaut" do
  cwd "/etc/swift"
- group node[:swift][:group]
- user node[:swift][:user]
+ group root
+ user root
  command <<-EOH
    swauth-add-account -K #{authkey} operations &&  swauth-add-user -a -K #{authkey} operations glance-images iPaDo9oh
    EOH
