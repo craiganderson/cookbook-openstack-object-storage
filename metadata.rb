@@ -11,6 +11,10 @@ recipe            'openstack-object-storage::container-server', 'Installs the sw
 recipe            'openstack-object-storage::object-server', 'Installs the swift object server'
 recipe            'openstack-object-storage::proxy-server', 'Installs the swift proxy server'
 recipe            'openstack-object-storage::setup', 'Does initial setup of a swift cluster'
+recipe            'openstack-object-storage::swift-auth', 'Add swauth functions'
+
+
+
 
 %w{ centos ubuntu }.each do |os|
   supports os
