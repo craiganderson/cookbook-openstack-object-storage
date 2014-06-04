@@ -22,6 +22,7 @@ include_recipe 'openstack-object-storage::memcached'
 
 class Chef::Recipe # rubocop:disable Documentation
   include IPUtils
+  include Swiftauthkey
 end
 
 if node.run_list.expand(node.chef_environment).recipes.include?('openstack-object-storage::setup')
@@ -120,12 +121,7 @@ else
 end
 
 # determine authkey to use
-if node['openstack']['object-storage']['swift_secret_databag_name'].nil?
-  authkey = node['openstack']['object-storage']['authkey']
-else
-  swift_secrets = Chef::EncryptedDataBagItem.load 'secrets', node['openstack']['object-storage']['swift_secret_databag_name']
-  authkey = swift_secrets['swift_authkey']
-end
+authkey = get_swift_authkey()
 
 # create proxy config file
 template '/etc/swift/proxy-server.conf' do
