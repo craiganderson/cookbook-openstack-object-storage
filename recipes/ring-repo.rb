@@ -153,23 +153,17 @@ bash 'rebuild-rings' do
     git reset --hard
     git clean -df
 
-    ../generate-rings.sh
+    ../generate-rings.sh --force
     for d in object account container; do swift-ring-builder ${d}.builder; done
 
-    add=0
     if test -n "$(find . -maxdepth 1 -name '*gz' -print -quit)"
     then
         git add *builder *gz
-        add=1
     else
         git add *builder
-        add=1
     fi
-    if [ $add -ne 0 ]
-    then
-        git commit -m "Autobuild of rings on $(date +%Y%m%d) by Chef" --author="chef <chef@openstack>"
+        git commit -a -m "Autobuild of rings on $(date +%Y%m%d) by Chef" --author="chef <chef@openstack>"
         git push
-    fi
 
   EOF
 end
