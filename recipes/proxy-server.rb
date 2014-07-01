@@ -22,7 +22,7 @@ include_recipe 'openstack-object-storage::memcached'
 
 class Chef::Recipe # rubocop:disable Documentation
   include IPUtils
-  include Swiftauthkey
+  include ::Openstack
 end
 
 if node.run_list.expand(node.chef_environment).recipes.include?('openstack-object-storage::setup')
@@ -100,7 +100,7 @@ service 'swift-proxy' do
   service_name swift_proxy_service
   provider platform_options['service_provider']
   supports status: true, restart: true
-  action [:enable, :start]
+#  action [:enable, :start]
   only_if '[ -e /etc/swift/proxy-server.conf ] && [ -e /etc/swift/object.ring.gz ]'
 end
 
@@ -123,6 +123,10 @@ end
 # determine authkey to use
 authkey = get_swift_authkey()
 
+identity_endpoint = endpoint 'identity-api'
+identity_admin_endpoint = endpoint 'identity-admin'
+
+auth_uri = auth_uri_transform identity_endpoint.to_s, node['openstack']['image']['api']['auth']['version']
 # create proxy config file
 template '/etc/swift/proxy-server.conf' do
   source 'proxy-server.conf.erb'
@@ -131,6 +135,8 @@ template '/etc/swift/proxy-server.conf' do
   mode '0600'
   variables(
     'authmode' => node['openstack']['object-storage']['authmode'],
+    auth_uri: auth_uri,
+    identity_admin_endpoint: identity_admin_endpoint,
     'bind_host' => node['openstack']['object-storage']['network']['proxy-bind-ip'],
     'bind_port' => node['openstack']['object-storage']['network']['proxy-bind-port'],
     'authkey' => authkey,

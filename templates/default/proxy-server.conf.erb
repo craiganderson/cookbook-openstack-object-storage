@@ -261,6 +261,33 @@ use = egg:swift#formpost
 operator_roles = Member,admin
 use = egg:swift#keystoneauth
 
+<% if node['openstack']['object-storage']['authmode'] == "keystone" %>
+
+
+[filter:authtoken]
+paste.filter_factory = keystoneclient.middleware.auth_token:filter_factory
+auth_uri = <%= @auth_uri %>
+auth_host = <%= @identity_admin_endpoint.host %>
+auth_port = <%= @identity_admin_endpoint.port %>
+auth_protocol = <%= @identity_admin_endpoint.scheme %>
+auth_version = <%= node["openstack"]["object-storage"]["auth"]["version"] %>
+admin_tenant_name = <%= node["openstack"]["object-storage"]["service_tenant_name"] %>
+admin_user = swift
+#TBD!
+admin_password = swift
+#paste.filter_factory = keystoneclient.middleware.auth_token:filter_factory
+#auth_uri = http://auth.ccpdevdcp.cci.att.com:5000/v2.0/
+#auth_host = auth.ccpdevdcp.cci.att.com
+#auth_port = 35357
+#auth_protocol = http
+#auth_version = v2.0
+#admin_tenant_name = service
+#admin_user = swift
+#admin_password = swift
+
+<% end %>
+
+
 [filter:proxy-logging]
 use = egg:swift#proxy_logging
 # access_log_name = proxy
