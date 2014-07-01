@@ -100,7 +100,7 @@ service 'swift-proxy' do
   service_name swift_proxy_service
   provider platform_options['service_provider']
   supports status: true, restart: true
-#  action [:enable, :start]
+  action [:enable, :start]
   only_if '[ -e /etc/swift/proxy-server.conf ] && [ -e /etc/swift/object.ring.gz ]'
 end
 
