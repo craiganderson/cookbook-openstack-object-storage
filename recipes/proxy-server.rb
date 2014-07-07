@@ -22,6 +22,7 @@ include_recipe 'openstack-object-storage::memcached'
 
 class Chef::Recipe # rubocop:disable Documentation
   include IPUtils
+  include ::Openstack
 end
 
 if node.run_list.expand(node.chef_environment).recipes.include?('openstack-object-storage::setup')
@@ -127,6 +128,10 @@ else
   authkey = swift_secrets['swift_authkey']
 end
 
+identity_endpoint = endpoint 'identity-api'
+identity_admin_endpoint = endpoint 'identity-admin'
+
+auth_uri = auth_uri_transform identity_endpoint.to_s, node['openstack']['image']['api']['auth']['version']
 # create proxy config file
 template '/etc/swift/proxy-server.conf' do
   source 'proxy-server.conf.erb'
@@ -135,6 +140,8 @@ template '/etc/swift/proxy-server.conf' do
   mode 0600
   variables(
     'authmode' => node['openstack']['object-storage']['authmode'],
+    auth_uri: auth_uri,
+    identity_admin_endpoint: identity_admin_endpoint,
     'bind_host' => node['openstack']['object-storage']['network']['proxy-bind-ip'],
     'bind_port' => node['openstack']['object-storage']['network']['proxy-bind-port'],
     'authkey' => authkey,
