@@ -1,5 +1,13 @@
 # encoding: UTF-8
 # TODO(chrislaco) This file needs the stock chef header/copyright
+
+#--------------------
+# keystone auth params
+#--------------------
+default["openstack"]["object-storage"]["service_tenant_name"] = "service"
+default["openstack"]["object-storage"]["service_user"] = "swift"
+default["openstack"]["object-storage"]["service_role"] = "admin"
+
 #--------------------
 # node/ring settings
 #--------------------

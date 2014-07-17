@@ -19,4 +19,4 @@ end
 depends 'memcached', '>= 1.7.2'
 depends 'statsd', '>= 0.1.5'
 depends 'apt', '>= 2.3.8'
-depends 'openstack-common', '~> 9.0'
+depends 'openstack-common', '~> 8.0'
