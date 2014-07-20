@@ -142,6 +142,7 @@ template '/etc/swift/proxy-server.conf' do
     'bind_host' => node['openstack']['object-storage']['network']['proxy-bind-ip'],
     'bind_port' => node['openstack']['object-storage']['network']['proxy-bind-port'],
     'authkey' => authkey,
+    admin_password: admin_pass,
     'memcache_servers' => memcache_servers
   )
   notifies :restart, 'service[swift-proxy]', :immediately
