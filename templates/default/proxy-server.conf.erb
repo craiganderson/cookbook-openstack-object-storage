@@ -258,7 +258,7 @@ outgoing_allow_headers = <%= node['openstack']['object-storage']['tempurl']['out
 use = egg:swift#formpost
 
 [filter:keystoneauth]
-operator_roles = Member,admin
+operator_roles = Member,admin,_member_
 use = egg:swift#keystoneauth
 
 <% if node['openstack']['object-storage']['authmode'] == "keystone" %>
