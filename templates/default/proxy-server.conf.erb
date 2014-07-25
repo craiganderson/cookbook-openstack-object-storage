@@ -71,7 +71,7 @@ log_statsd_metric_prefix = <%= node['openstack']['object-storage']['statistics']
 
 
 [pipeline:main]
-pipeline = catch_errors healthcheck cache ratelimit <%= pipeline.join(" ") %> proxy-logging proxy-server
+pipeline = catch_errors healthcheck cache slo ratelimit <%= pipeline.join(" ") %> proxy-logging proxy-server
 
 [app:proxy-server]
 use = egg:swift#proxy
@@ -294,3 +294,5 @@ use = egg:swift#proxy_logging
 # not in this list will have "BAD_METHOD" for the <verb> portion of the metric.
 # log_statsd_valid_http_methods = GET,HEAD,POST,PUT,DELETE,COPY
 
+[filter:slo]
+use = egg:swift#slo
