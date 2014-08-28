@@ -125,8 +125,10 @@ authkey = get_swift_authkey()
 
 identity_endpoint = endpoint 'identity-api'
 identity_admin_endpoint = endpoint 'identity-admin'
+identity_internal_endpoint = endpoint 'identity-api-internal'
 
-auth_uri = auth_uri_transform identity_endpoint.to_s, node['openstack']['image']['api']['auth']['version']
+auth_uri = auth_uri_transform identity_internal_endpoint.to_s, node['openstack']['image']['api']['auth']['version']
+admin_pass = get_password 'service', 'openstack-object-storage'
 # create proxy config file
 template '/etc/swift/proxy-server.conf' do
   source 'proxy-server.conf.erb'
@@ -136,7 +138,7 @@ template '/etc/swift/proxy-server.conf' do
   variables(
     'authmode' => node['openstack']['object-storage']['authmode'],
     auth_uri: auth_uri,
-    identity_admin_endpoint: identity_admin_endpoint,
+    identity_internal_endpoint: identity_internal_endpoint,
     'bind_host' => node['openstack']['object-storage']['network']['proxy-bind-ip'],
     'bind_port' => node['openstack']['object-storage']['network']['proxy-bind-port'],
     'authkey' => authkey,

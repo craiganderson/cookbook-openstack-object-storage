@@ -267,9 +267,9 @@ use = egg:swift#keystoneauth
 [filter:authtoken]
 paste.filter_factory = keystoneclient.middleware.auth_token:filter_factory
 auth_uri = <%= @auth_uri %>
-auth_host = <%= @identity_admin_endpoint.host %>
-auth_port = <%= @identity_admin_endpoint.port %>
-auth_protocol = <%= @identity_admin_endpoint.scheme %>
+auth_host = <%= @identity_internal_endpoint.host %>
+auth_port = <%= @identity_internal_endpoint.port %>
+auth_protocol = <%= @identity_internal_endpoint.scheme %>
 auth_version = <%= node["openstack"]["object-storage"]["auth"]["version"] %>
 admin_tenant_name = <%= node["openstack"]["object-storage"]["service_tenant_name"] %>
 admin_user = swift
