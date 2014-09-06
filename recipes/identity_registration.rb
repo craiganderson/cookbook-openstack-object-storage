@@ -30,6 +30,7 @@ token = secret 'secrets', 'openstack_identity_bootstrap_token'
 auth_url = ::URI.decode identity_admin_endpoint.to_s
 
 swift_endpoint = endpoint 'object-storage-api'
+swift_endpoint_internal = endpoint 'object-storage-api-internal'
 
 service_pass = get_password 'service', 'openstack-object-storage'
 service_tenant_name = node['openstack']['object-storage']['service_tenant_name']
@@ -54,9 +55,9 @@ openstack_identity_register 'Register Swift Object Store Endpoint' do
   bootstrap_token token
   service_type 'object-store'
   endpoint_region region
-  endpoint_adminurl swift_endpoint.to_s
-  endpoint_internalurl swift_endpoint.to_s
-  endpoint_publicurl swift_endpoint.to_s
+  endpoint_adminurl swift_endpoint_internal.to_s.gsub('%25', '%')
+  endpoint_internalurl swift_endpoint_internal.to_s.gsub('%25', '%')
+  endpoint_publicurl swift_endpoint.to_s.gsub('%25', '%')
 
   action :create_endpoint
 end

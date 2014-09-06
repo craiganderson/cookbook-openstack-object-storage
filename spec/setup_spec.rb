@@ -1,7 +1,7 @@
 # encoding: UTF-8
 require_relative 'spec_helper'
 
-describe 'openstack-object-storage::client' do
+describe 'openstack-object-storage::setup' do
   describe 'ubuntu' do
     let(:runner) { ChefSpec::Runner.new(UBUNTU_OPTS) }
     let(:node) { runner.node }
@@ -9,8 +9,9 @@ describe 'openstack-object-storage::client' do
       runner.converge(described_recipe)
     end
 
-    it 'installs packages' do
-      expect(chef_run).to upgrade_package('python-swiftclient')
-    end
+    include_context 'swift-stubs'
+    include_examples 'keystone-authmode'
+
+    # TODO: flush out rest of this spec
   end
 end

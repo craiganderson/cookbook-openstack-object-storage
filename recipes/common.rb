@@ -58,24 +58,10 @@ end
 
 platform_options = node['openstack']['object-storage']['platform']
 
-# update repository if requested with the ubuntu cloud
-case node['platform']
-when 'ubuntu'
-
-  Chef::Log.info('Creating apt repository for http://ubuntu-cloud.archive.canonical.com/ubuntu')
-  Chef::Log.info("chefspec: #{node['lsb']['codename']}-updates/#{node['openstack']['object-storage']['release']}")
-  apt_repository 'ubuntu_cloud' do
-    uri 'http://ubuntu-cloud.archive.canonical.com/ubuntu'
-    distribution "#{node['lsb']['codename']}-updates/#{node['openstack']['object-storage']['release']}"
-    components ['main']
-    key '5EDB1B62EC4926EA'
-    action :add
-  end
-end
-
 platform_options['swift_packages'].each do |pkg|
   package pkg do
-    action :install
+    options platform_options['package_overrides']
+    action :upgrade
   end
 end
 
@@ -83,7 +69,7 @@ directory '/etc/swift' do
   action :create
   owner 'swift'
   group 'swift'
-  mode '0700'
+  mode 0700
   only_if '/usr/bin/id swift'
 end
 
@@ -99,7 +85,7 @@ file '/etc/swift/swift.conf' do
   action :create
   owner 'swift'
   group 'swift'
-  mode '0700'
+  mode 0700
   content "[swift-hash]\nswift_hash_path_suffix=#{swifthash}\n"
   only_if '/usr/bin/id swift'
 end
@@ -112,7 +98,8 @@ user 'swift' do
 end
 
 package 'git' do
-  action :install
+  options platform_options['package_overrides']
+  action :upgrade
 end
 
 # drop a ring puller script
@@ -122,7 +109,7 @@ template '/etc/swift/pull-rings.sh' do
   source 'pull-rings.sh.erb'
   owner 'swift'
   group 'swift'
-  mode '0700'
+  mode 0700
   variables(
     builder_ip: git_builder_ip,
     service_prefix: platform_options['service_prefix']

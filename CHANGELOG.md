@@ -1,6 +1,14 @@
 # CHANGELOG for cookbook-openstack-object-storage
 
 This file is used to list changes made in each version of cookbook-openstack-object-storage.
+## 9.0.2
+* Fix package action to allow updates
+
+## 9.0.1
+* Fix package reference, need keystone client not keystone
+
+## 9.0.0
+* Upgrade to Icehouse
 
 ## 8.3.0:
 * Rename all attributes to conform to other cookbooks.
