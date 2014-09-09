@@ -2,12 +2,11 @@
 # TODO(chrislaco) This file needs the stock chef header/copyright
 
 #--------------------
-# keystone auth params and endpoint info
+# keystone auth params
 #--------------------
 default["openstack"]["object-storage"]["service_tenant_name"] = "service"
 default["openstack"]["object-storage"]["service_user"] = "swift"
 default["openstack"]["object-storage"]["service_role"] = "admin"
-default['openstack']['endpoints']['object-storage-api-internal']['uri'] = node['openstack']['endpoints']['object-storage-api']['uri']
 
 #--------------------
 # node/ring settings
@@ -22,7 +21,7 @@ default['openstack']['object-storage']['git_builder_ip'] = '127.0.0.1'
 
 # the release only has any effect on ubuntu, and must be
 # a valid release on http://ubuntu-cloud.archive.canonical.com/ubuntu
-default['openstack']['object-storage']['release'] = 'icehouse'
+default['openstack']['object-storage']['release'] = 'havana'
 
 # we support an optional secret databag where we will retrieve the
 # following attributes overriding any default attributes here

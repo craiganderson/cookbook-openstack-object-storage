@@ -22,7 +22,7 @@ platform_options = node['openstack']['object-storage']['platform']
 
 platform_options['rsync_packages'].each do |pkg|
   package pkg do
-    action :upgrade
+    action :install
     options platform_options['override_options']
   end
 end
@@ -73,7 +73,7 @@ end
 
 template '/etc/rsyncd.conf' do
   source 'rsyncd.conf.erb'
-  mode 0644
+  mode '0644'
   notifies :restart, "service[#{rsync_servicename}]", :immediately
 end
 
