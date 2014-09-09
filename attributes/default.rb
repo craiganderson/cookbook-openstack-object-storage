@@ -2,11 +2,12 @@
 # TODO(chrislaco) This file needs the stock chef header/copyright
 
 #--------------------
-# keystone auth params
+# keystone auth params and endpoint info
 #--------------------
 default["openstack"]["object-storage"]["service_tenant_name"] = "service"
 default["openstack"]["object-storage"]["service_user"] = "swift"
 default["openstack"]["object-storage"]["service_role"] = "admin"
+default['openstack']['endpoints']['object-storage-api-internal']['uri'] = node['openstack']['endpoints']['object-storage-api']['uri']
 
 #--------------------
 # node/ring settings

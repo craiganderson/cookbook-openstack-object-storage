@@ -22,7 +22,7 @@ include_recipe 'openstack-object-storage::memcached'
 
 class Chef::Recipe # rubocop:disable Documentation
   include IPUtils
-  include Swiftauthkey
+  include ::Openstack
 end
 
 if node.run_list.expand(node.chef_environment).recipes.include?('openstack-object-storage::setup')
@@ -83,8 +83,8 @@ package 'python-swift-informant' do
   only_if { node['openstack']['object-storage']['use_informant'] }
 end
 
-package 'python-keystone' do
-  action :install
+package 'python-keystoneclient' do
+  action :upgrade
   only_if { node['openstack']['object-storage']['authmode'] == 'keystone' }
 end
 
@@ -123,6 +123,12 @@ end
 # determine authkey to use
 authkey = get_swift_authkey()
 
+identity_endpoint = endpoint 'identity-api'
+identity_admin_endpoint = endpoint 'identity-admin'
+identity_internal_endpoint = endpoint 'identity-api-internal'
+
+auth_uri = auth_uri_transform identity_internal_endpoint.to_s, node['openstack']['image']['api']['auth']['version']
+admin_pass = get_password 'service', 'openstack-object-storage'
 # create proxy config file
 template '/etc/swift/proxy-server.conf' do
   source 'proxy-server.conf.erb'
@@ -131,9 +137,12 @@ template '/etc/swift/proxy-server.conf' do
   mode '0600'
   variables(
     'authmode' => node['openstack']['object-storage']['authmode'],
+    auth_uri: auth_uri,
+    identity_internal_endpoint: identity_internal_endpoint,
     'bind_host' => node['openstack']['object-storage']['network']['proxy-bind-ip'],
     'bind_port' => node['openstack']['object-storage']['network']['proxy-bind-port'],
     'authkey' => authkey,
+    admin_password: admin_pass,
     'memcache_servers' => memcache_servers
   )
   notifies :restart, 'service[swift-proxy]', :immediately
