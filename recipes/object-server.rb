@@ -26,7 +26,7 @@ platform_options = node['openstack']['object-storage']['platform']
 
 platform_options['object_packages'].each do |pkg|
   package pkg do
-    action :upgrade
+    action :install
     options platform_options['override_options'] # retain configs
   end
 end
@@ -87,7 +87,7 @@ template '/etc/swift/object-server.conf' do
   source 'object-server.conf.erb'
   owner 'swift'
   group 'swift'
-  mode 0600
+  mode '0600'
   variables(
     'bind_ip' => node['openstack']['object-storage']['network']['object-bind-ip'],
     'bind_port' => node['openstack']['object-storage']['network']['object-bind-port']

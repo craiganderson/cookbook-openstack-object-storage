@@ -22,7 +22,7 @@ include_recipe 'openstack-object-storage::memcached'
 
 class Chef::Recipe # rubocop:disable Documentation
   include IPUtils
-  include ::Openstack
+  include Swiftauthkey
 end
 
 if node.run_list.expand(node.chef_environment).recipes.include?('openstack-object-storage::setup')
@@ -42,10 +42,10 @@ end
 
 platform_options = node['openstack']['object-storage']['platform']
 
-# upgrade platform-specific packages
+# install platform-specific packages
 platform_options['proxy_packages'].each do |pkg|
   package pkg do
-    action :upgrade
+    action :install
     options platform_options['override_options']
   end
 end
@@ -55,7 +55,7 @@ if node['openstack']['object-storage']['authmode'] == 'swauth'
   when 'package'
     platform_options['swauth_packages'].each do |pkg|
       package pkg do
-        action :upgrade
+        action :install
         options platform_options['override_options']
       end
     end
@@ -79,12 +79,12 @@ if node['openstack']['object-storage']['authmode'] == 'swauth'
 end
 
 package 'python-swift-informant' do
-  action :upgrade
+  action :install
   only_if { node['openstack']['object-storage']['use_informant'] }
 end
 
-package 'python-keystoneclient' do
-  action :upgrade
+package 'python-keystone' do
+  action :install
   only_if { node['openstack']['object-storage']['authmode'] == 'keystone' }
 end
 
@@ -123,26 +123,17 @@ end
 # determine authkey to use
 authkey = get_swift_authkey()
 
-identity_endpoint = endpoint 'identity-api'
-identity_admin_endpoint = endpoint 'identity-admin'
-identity_internal_endpoint = endpoint 'identity-api-internal'
-
-auth_uri = auth_uri_transform identity_internal_endpoint.to_s, node['openstack']['image']['api']['auth']['version']
-admin_pass = get_password 'service', 'openstack-object-storage'
 # create proxy config file
 template '/etc/swift/proxy-server.conf' do
   source 'proxy-server.conf.erb'
   owner 'swift'
   group 'swift'
-  mode 0600
+  mode '0600'
   variables(
     'authmode' => node['openstack']['object-storage']['authmode'],
-    auth_uri: auth_uri,
-    identity_internal_endpoint: identity_internal_endpoint,
     'bind_host' => node['openstack']['object-storage']['network']['proxy-bind-ip'],
     'bind_port' => node['openstack']['object-storage']['network']['proxy-bind-port'],
     'authkey' => authkey,
-    admin_password: admin_pass,
     'memcache_servers' => memcache_servers
   )
   notifies :restart, 'service[swift-proxy]', :immediately

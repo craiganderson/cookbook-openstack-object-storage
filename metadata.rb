@@ -3,7 +3,7 @@ maintainer        'ATT, Inc.'
 license           'Apache 2.0'
 description       'Installs and configures Openstack Swift'
 long_description  IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version           '9.0.11'
+version           '8.3.6'
 
 recipe            'openstack-object-storage::account-server', 'Installs the swift account server'
 recipe            'openstack-object-storage::client', 'Install the switch client'
@@ -20,7 +20,7 @@ recipe            'openstack-object-storage::swift-auth', 'Add swauth functions'
   supports os
 end
 
-depends 'memcached', '>= 1.7.2'
-depends 'statsd', '>= 0.1.5'
-depends 'apt', '>= 2.3.8'
-depends 'openstack-common', '~> 8.0'
+depends           'memcached'
+depends           'statsd'
+depends           'apt'
+depends           'openstack-common', '~> 8.0'
