@@ -269,6 +269,7 @@ auth_host = <%= @identity_internal_endpoint.host %>
 auth_port = <%= @identity_internal_endpoint.port %>
 auth_protocol = <%= @identity_internal_endpoint.scheme %>
 auth_version = <%= node["openstack"]["object-storage"]["auth"]["version"] %>
+auth_region = <%= node['openstack']['region'] %>
 admin_tenant_name = <%= node["openstack"]["object-storage"]["service_tenant_name"] %>
 admin_user = <%= node["openstack"]["object-storage"]["service_user"] %>
 admin_password = <%= @admin_password %>
